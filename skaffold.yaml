@@ -1,0 +1,32 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.DOCKER_REGISTRY}}/xieweicarl2018/golang-http-82-xieweicarl2018:{{.VERSION}}"
+  artifacts:
+  - imageName: changeme
+    workspace: .
+    docker: {}
+  local: {}
+deploy:
+  kubectl:
+    manifests:
+profiles:
+- name: dev
+  build:
+    tagPolicy:
+      envTemplate:
+        template: "{{.DOCKER_REGISTRY}}/xieweicarl2018/golang-http-82-xieweicarl2018:{{.DIGEST_HEX}}"
+    artifacts:
+    - docker: {}
+    local: {}
+  deploy:
+    helm:
+      releases:
+      - name: golang-http-82-xieweicarl2018
+        chartPath: charts/golang-http-82-xieweicarl2018
+        setValueTemplates:
+          image.repository: "{{.DOCKER_REGISTRY}}/xieweicarl2018/golang-http-82-xieweicarl2018"
+          image.tag: "{{.DIGEST_HEX}}"
+        
